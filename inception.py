@@ -1,4 +1,5 @@
 import tensorflow as tf
+import matplotlib.pyplot as plt
 from tensorflow import keras
 import tensorflow_datasets as tfds
 from functools import partial
@@ -37,9 +38,9 @@ test_set = test_set_raw.map(preprocess).batch(32).prefetch(1)
 for layer in base_model.layers:
     layer.trainable = False
 
-optimizer = keras.optimizers.SGD(lr=0.1, momentum=0.9, decay=0.01)
+optimizer = keras.optimizers.SGD(lr=0.01, momentum=0.9, decay=0.01)
 model.compile(loss='sparse_categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
 history = model.fit(train_set, steps_per_epoch=int(0.75* dataset_size / 32), validation_data=valid_set,
-                    validation_steps=int(0.15 * dataset_size / 32), epochs=5)
-
-print(model.predict(test_set))
+                    validation_steps=int(0.15 * dataset_size / 32), epochs=2)
+model.save('plantid_model')
+keras.experimental.export_saved_model(history, 'plantid_savemodel')
