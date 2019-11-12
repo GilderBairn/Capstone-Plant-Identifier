@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block head %}
+<title>Results</title>
+{% endblock %}
+
+{% block body %}
+<div class="plantid_info">
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <ul class=flashes>
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+
+  <p>{{ image }}</p>
+  <img src={{ url_for('result_image', filename=image) }}>
+</div>
+{% endblock %}

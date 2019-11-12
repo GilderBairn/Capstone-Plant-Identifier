@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    <title>Scan Plant</title>
+{% endblock %}
+
+{% block body %}
+<div class="plantid_info">
+    <form method="post" action="/results" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="imageFileUpload">Select an image to upload</label>
+            <input type="file" class="form-control-file" id="imageFileUpload" name="file">
+        </div>
+        <button type="submit" value="Upload" class="btn btn-primary btn-lg">Get Scanning!</button>
+    </form>
+</div>
+{% endblock %}

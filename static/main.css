@@ -1,0 +1,105 @@
+html {
+    height: 100%;
+    width: 100%;
+}
+
+body {
+    font-family: sans-serif;
+    margin: 0;
+    height: 100%;
+    width: 100%;
+}
+
+.bg {
+    background-image: url('/static/images/main_bg.jpg') ;
+    width: 100vw;
+    height: 100vh;
+    background-attachment: fixed;
+    position: fixed;
+    overflow-y: scroll;
+}
+
+.plantid_info {
+    width: 60vw;
+    min-height: 60vh;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    border-radius: 1em;
+    top: 50%;
+    left: 50%;
+    padding: 5em;
+    background-color: #fafafa;
+}
+
+.flashes {
+    margin-bottom: 0;
+}
+
+.navbar {
+    position: fixed;
+    width: 100vw;
+    z-index: 999;
+}
+
+.results_grid {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    padding-top: 4em;
+    height: auto;
+}
+
+.results_image_container {
+    position: relative;
+    border-radius: 1em;
+    padding: 2em;
+    margin: 3em;
+    height: auto;
+    background-color: #fafafa;
+}
+
+.results_info {
+    position: relative;
+    border-radius: 1em;
+    padding: 3em;
+    margin: 3em;
+    background-color: #fafafa;
+}
+
+.results_image {
+    height: auto;
+    width: 100%;
+}
+
+@font-face {
+    font-family: "rupture-stamp";
+    src: url('/static/Rupture_Stamp.ttf');
+}
+
+.title-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.Title {
+    font-family: "rupture-stamp";
+    font-size: 80pt;
+    color: #ffffff;
+}
+
+.start-btn {
+    font-size: 2.25rem;
+    box-shadow: 5px 5px 15px black;
+    border: 2px solid;
+    border-color: #ffffff;
+    transition: 0.5s;
+}
+
+.start-btn:hover {
+    box-shadow: 2px 2px 5px black;
+    border-color: #28a745;
+    background-color: #ffffff;
+    color: #28a745;
+}
