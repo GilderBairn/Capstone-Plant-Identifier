@@ -4,18 +4,17 @@
 {% endblock %}
 
 {% block body %}
-<div class="plantid_info">
-  {% with messages = get_flashed_messages() %}
-    {% if messages %}
-      <ul class=flashes>
-      {% for message in messages %}
-        <li>{{ message }}</li>
-      {% endfor %}
-      </ul>
-    {% endif %}
-  {% endwith %}
-
-  <p>{{ image }}</p>
-  <img src={{ url_for('result_image', filename=image) }}>
+<div class="results_grid">
+  <div class="results_image_container">
+    <img class="results_image" src={{ url_for('result_image', filename=image) }}>
+  </div>
+  <div class="results_info">
+    <h1>Top Result</h1>
+    <p>Info on the given plant. genus, phylum, species, stats</p>
+    <h2>Second Result</h2>
+    <p>Info on the given plant. genus, phylum, species, stats</p>
+    <h3>Third Result</h3>
+    <p>Info on the given plant. genus, phylum, species, stats</p>
+  </div>
 </div>
 {% endblock %}

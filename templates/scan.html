@@ -6,12 +6,23 @@
 
 {% block body %}
 <div class="plantid_info">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="alert alert-danger">
+        <ul class=flashes>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    {% endwith %}
     <form method="post" action="/results" enctype="multipart/form-data">
         <div class="form-group">
             <label for="imageFileUpload">Select an image to upload</label>
             <input type="file" class="form-control-file" id="imageFileUpload" name="file">
         </div>
-        <button type="submit" value="Upload" class="btn btn-primary btn-lg">Get Scanning!</button>
+        <button type="submit" value="Upload" class="btn btn-success btn-lg">Get Scanning!</button>
     </form>
 </div>
 {% endblock %}
