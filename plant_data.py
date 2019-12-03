@@ -18,7 +18,7 @@ def get_inceptionv3():
     return base_model
 
 
-plant_data_dir = '/media/ben/DATA/plantdata'
+plant_data_dir = 'D:\\plantdata'
 
 
 def compile_plant_data(input_dir, output_file, parallel_num):
@@ -29,37 +29,56 @@ def compile_plant_data(input_dir, output_file, parallel_num):
     label_list = []
     image_list = []
     examples = os.listdir(source_dir)
-    with open(os.path.join(plant_data_dir, output_file), 'w') as out:
-        for file in examples:
-            if file.endswith('xml'):
-                # find xml files in the directory
-                if counter % 100 == 0:
-                    print(counter)
-                # read class label from xml file, and get image from specified jpg with name mediaID
+    for file in examples:
+        if file.endswith('xml'):
+            # find xml files in the directory
+            if counter % 100 == 0:
+                print(counter)
+                print('len of dataset is currently:', len(dataset))
+                if len(dataset) > 0:
+                    print('len of index 1 and -1 are', len(dataset[0]), len(dataset[len(dataset) - 1]))
+            # read class label from xml file, and get image from specified jpg with name mediaID
+            try:
                 with open(os.path.join(source_dir, file), 'r') as fp:
-                    bs = BeautifulSoup(fp.read(), features='html.parser')
-                mediaID = bs.mediaid.get_text()
-                image_list.append(preprocess(cv2.imread(os.path.join(source_dir, mediaID + '.jpg'))))
-                label_list.append(bs.classid.get_text())
-                # fee images into inception in groups to improve total runtime
-                if len(image_list) >= parallel_num:
-                    feature_list = inception.predict(tf.data.Dataset.from_tensors(image_list), verbose=1, steps=1)
-                    # build the new dict of features and label, and add it to the dataset list
-                    example = {}
-                    for data, label in zip(feature_list, label_list):
-                        for i, feature in enumerate(data):
-                            example['feature_' + str(i)] = float(feature)
-                        example['label'] = int(label)
-                        dataset.append(example)
-                    image_list.clear()
-                    # clear tracker lists and write to outfile
-                    json.dump(dataset, out)
-                    dataset.clear()
-                    label_list.clear()
-                    example.clear()
-                counter += 1
+                    bs = BeautifulSoup(fp.read(), features='html.parser', from_encoding='utf-8')
+            except UnicodeDecodeError:
+                try:
+                    fp.close()
+                    with open(os.path.join(source_dir, file), 'r', encoding='iso-8859-1') as fp:
+                        bs = BeautifulSoup(fp.read(), features='html.parser', from_encoding='utf-8')
+                except:
+                    print('could not decode characters in file:', file)
+                    continue
+            mediaID = bs.mediaid.get_text()
+            image_list.append(preprocess(cv2.imread(os.path.join(source_dir, mediaID + '.jpg'))))
+            label_list.append(bs.classid.get_text())
+            # fee images into inception in groups to improve total runtime
+            if len(image_list) >= parallel_num:
+                feature_list = inception.predict(tf.data.Dataset.from_tensors(image_list), verbose=0, steps=1)
+                # build the new dict of features and label, and add it to the dataset list
+                example = []
+                for data, label in zip(feature_list, label_list):
+                    for i, feature in enumerate(data):
+                        example.append(float(feature))
+                    example.append(int(label))
+                    dataset.append(example)
+                    example = []
+                image_list.clear()
+                # clear tracker lists and write to outfile
+                label_list.clear()
+            counter += 1
+    # finish the last even if there are less than parallel_num
+    if len(image_list) > 0:
+        feature_list = inception.predict(tf.data.Dataset.from_tensors(image_list), verbose=0, steps=1)
+        for data, label in zip(feature_list, label_list):
+            for i, feature in enumerate(data):
+                example.append(float(feature))
+            example.append(int(label))
+            dataset.append(example)
+    with open(os.path.join(plant_data_dir, output_file), 'w') as out:
+        json.dump(dataset, out)
 
 
-tf.executing_eagerly()
 target_directories = ['test', 'train']
-compile_plant_data('train', 'train_compiled.json', 8)
+for dir in target_directories:
+    compile_plant_data(dir, dir + '_compiled.json', 8)
