@@ -1,6 +1,12 @@
 from flask import Flask, render_template, request, flash, redirect, url_for, send_from_directory
 from werkzeug.utils import secure_filename
 import mysql.connector
+import pickle
+import cv2
+from tensorflow import keras
+import tensorflow.image as tfimage
+import tensorflow.data as tfdata
+from sklearn.linear_model import LogisticRegression
 import os
 
 app = Flask(__name__)
@@ -9,9 +15,37 @@ app.secret_key = b's*3%$oSej2N#p?'
 UPLOAD_FOLDER = 'uploads'
 ALLOWED_FILES = {'jpg', 'jpeg', 'png', 'gif'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MODEL_PATH'] = 'logreg.pkl'
 db = mysql.connector.connect(host='localhost', user='phpmyadmin', passwd='Lizziefarts303!', database='plantid')
 # TODO add a new mysql user and replace this info
 cursor = db.cursor()
+
+
+def get_inceptionv3():
+    base_model = keras.applications.inception_v3.InceptionV3(include_top=False, weights='imagenet',
+                                                             input_shape=(299, 299, 3), pooling='avg')
+    return base_model
+
+
+def preprocess(image):
+    resized_image = tfimage.resize(image, [299, 299])
+    final_image = keras.applications.inception_v3.preprocess_input(resized_image)
+    return final_image
+
+
+def extract_image_features(fname):
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], fname)
+    image = cv2.imread(file_path)
+    image = preprocess(image)
+    in_tensor = tfdata.Dataset.from_tensors([image])
+    inception = get_inceptionv3()
+    return inception.predict(in_tensor, verbose=0, steps=1)
+
+
+def get_model():
+    with open(app.config['MODEL_PATH'], 'rb') as fp:
+        result = pickle.load(fp)
+    return result
 
 
 @app.route('/')
@@ -41,8 +75,16 @@ def results():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            model = get_model()
+            features = extract_image_features(filename)
+            prediction = model.predict(features)[0]
             #return redirect(url_for('results', image=filename))
-            return render_template('results.html', image=filename, top_result='1')
+            cursor.execute('SELECT * FROM species WHERE classID = %d' % int(prediction))
+            info = cursor.fetchall()[0]
+            genus = info[1]
+            family = info[2]
+            species = info[3]
+            return render_template('results.html', image=filename, species=species, family=family, genus=genus)
         else:
             flash('Wrong file type')
             return redirect(request.url)

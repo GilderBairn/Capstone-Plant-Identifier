@@ -9,12 +9,8 @@
     <img class="results_image" src={{ url_for('result_image', filename=image) }}>
   </div>
   <div class="results_info">
-    <h1>Top Result</h1>
-    <p>Info on the given plant. genus, phylum, species, stats</p>
-    <h2>Second Result</h2>
-    <p>Info on the given plant. genus, phylum, species, stats</p>
-    <h3>Third Result</h3>
-    <p>Info on the given plant. genus, phylum, species, stats</p>
+    <h1>{{ species }}</h1>
+    <p>{{ family }}, {{ genus }}</p>
   </div>
 </div>
 {% endblock %}
