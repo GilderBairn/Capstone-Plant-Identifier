@@ -64,6 +64,7 @@ body {
     margin: 3em;
     background-color: #fafafa;
     max-width: 40vw;
+    height: fit-content;
 }
 
 .results_image {

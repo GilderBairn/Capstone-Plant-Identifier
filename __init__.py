@@ -65,7 +65,7 @@ def get_extras(classID, species):
             page_link = url_head + link
             html = urlopen(page_link)
             result_page = BeautifulSoup(html, features='html.parser')
-            img_url = result_page.img['src']
+            img_url = result_page.tbody.img['src']
             description = result_page.find('div', attrs={'class': 'mw-parser-output'}).find_all('p')[1].get_text()
             if len(description) > 1024:
                 description = description[0:1023]
