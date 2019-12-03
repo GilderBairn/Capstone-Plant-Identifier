@@ -53,7 +53,7 @@ body {
     border-radius: 1em;
     padding: 2em;
     margin: 3em;
-    height: auto;
+    height: fit-content;
     background-color: #fafafa;
 }
 
@@ -103,4 +103,8 @@ body {
     border-color: #28a745;
     background-color: #ffffff;
     color: #28a745;
+}
+
+.prediction_preivew {
+
 }

@@ -11,8 +11,10 @@
   <div class="results_info">
     <h1>{{ species }}</h1>
     <h2>{{ family }}, {{ genus }}</h2>
-    <p>{{ description }}</p>
-    <a href="{{ wiki_link }}">wiki link</a>
+    <p>{{ description }}
+      <a href="{{ wiki_link }}">wiki link</a>
+    </p>
+    <img src="{{ img_link }}" class="prediction_preview">
   </div>
 </div>
 {% endblock %}
