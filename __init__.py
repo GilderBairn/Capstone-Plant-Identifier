@@ -18,8 +18,7 @@ UPLOAD_FOLDER = 'uploads'
 ALLOWED_FILES = {'jpg', 'jpeg', 'png', 'gif'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MODEL_PATH'] = 'logreg.pkl'
-db = mysql.connector.connect(host='localhost', user='phpmyadmin', passwd='Lizziefarts303!', database='plantid')
-# TODO add a new mysql user and replace this info
+db = mysql.connector.connect(host='localhost', user='phpmyadmin', passwd='capstoneP1ant!d', database='plantid')
 cursor = db.cursor()
 
 
