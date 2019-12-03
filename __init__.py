@@ -121,7 +121,7 @@ def results():
                                    wiki_link=extras[0], img_link=extras[1], description=extras[2])
         else:
             flash('Wrong file type')
-            return redirect(request.url)
+            return redirect(url_for('scan_plant'))
     return render_template('results.html')
 
 
@@ -132,7 +132,7 @@ def result_image(filename):
 
 @app.route('/about')
 def about():
-    return render_template('index.html', test='about')
+    return render_template('about.html', test='about')
 
 
 if __name__ == '__main__':
