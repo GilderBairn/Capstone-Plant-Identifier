@@ -63,6 +63,7 @@ body {
     padding: 3em;
     margin: 3em;
     background-color: #fafafa;
+    max-width: 40vw;
 }
 
 .results_image {

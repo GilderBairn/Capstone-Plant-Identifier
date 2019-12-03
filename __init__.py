@@ -7,6 +7,8 @@ from tensorflow import keras
 import tensorflow.image as tfimage
 import tensorflow.data as tfdata
 from sklearn.linear_model import LogisticRegression
+from urllib.request import urlopen
+from bs4 import BeautifulSoup
 import os
 
 app = Flask(__name__)
@@ -48,6 +50,37 @@ def get_model():
     return result
 
 
+def get_extras(classID, species):
+    sql = 'SELECT * FROM extras WHERE plant_classID = %d' % classID
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    if not result:
+        print('finding new extras for prediction', classID)
+        try:
+            base_url = 'https://en.wikipedia.org/w/index.php?search='
+            url_head = 'https://en.wikipedia.org/'
+            species_fixed = species.replace(' ', '+')
+            html = urlopen(base_url + species_fixed)
+            search_page = BeautifulSoup(html, features='html.parser')
+            link = search_page.find('div', attrs={'class': 'searchresults'}).li.a['href']
+            page_link = url_head + link
+            html = urlopen(page_link)
+            result_page = BeautifulSoup(html, features='html.parser')
+            img_url = result_page.img['src']
+            description = result_page.find('div', attrs={'class': 'mw-parser-output'}).find_all('p')[1].get_text()
+            if len(description) > 1024:
+                description = description[0:1023]
+            sql = 'INSERT INTO extras VALUES ("%s", "%s", "%s", %d)'
+            values = (page_link, img_url, description, classID)
+            cursor.execute(sql % values)
+            db.commit()
+            return values
+        except AttributeError:
+            return ('', '', '')
+    else:
+        return result[0]
+
+
 @app.route('/')
 def index():
     return render_template('index.html', test='homepage')
@@ -84,7 +117,9 @@ def results():
             genus = info[1]
             family = info[2]
             species = info[3]
-            return render_template('results.html', image=filename, species=species, family=family, genus=genus)
+            extras = get_extras(int(prediction), species)
+            return render_template('results.html', image=filename, species=species, family=family, genus=genus,
+                                   wiki_link=extras[0], img_link=extras[1], description=extras[2])
         else:
             flash('Wrong file type')
             return redirect(request.url)
