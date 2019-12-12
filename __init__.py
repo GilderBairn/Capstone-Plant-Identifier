@@ -104,7 +104,7 @@ def results():
         file = request.files['file']
         if file.filename == '':
             flash('No image file selected for scan')
-            return redirect(request.url)
+            return redirect(url_for('scan_plant'))
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
