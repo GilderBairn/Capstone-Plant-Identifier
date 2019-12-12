@@ -66,9 +66,10 @@ def get_extras(classID, species):
             html = urlopen(page_link)
             result_page = BeautifulSoup(html, features='html.parser')
             img_url = result_page.tbody.img['src']
-            description = result_page.find('div', attrs={'class': 'mw-parser-output'}).find_all('p')[1].get_text()
+            description = result_page.find('div', attrs={'class': 'mw-parser-output'}).p.find_next_sibling('p').get_text()
             if len(description) > 1024:
                 description = description[0:1023]
+            description = description.replace('"', '').replace("'", '')
             sql = 'INSERT INTO extras VALUES ("%s", "%s", "%s", %d)'
             values = (page_link, img_url, description, classID)
             cursor.execute(sql % values)
@@ -99,7 +100,7 @@ def results():
     if request.method == 'POST':
         if 'file' not in request.files:
             flash('Missing image file portion of scan request')
-            return redirect(request.url)
+            return redirect(url_for('scan_plant'))
         file = request.files['file']
         if file.filename == '':
             flash('No image file selected for scan')
